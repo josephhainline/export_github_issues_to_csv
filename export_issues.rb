@@ -38,31 +38,44 @@ csv << header
 puts "Finding this organization's repositories..."
 org_repos = client.organization_repositories(GITHUB_ORGANIZATION)
 puts "Found " + org_repos.count.to_s + " repositories:"
+org_repo_names = []
 org_repos.each do |r|
+  org_repo_names.push r['full_name']
   puts r['full_name']
 end
-puts "\nGathering issues..."
 
+all_issues = []
 
-puts "Getting issues from Github..."
-temp_issues = []
-issues = []
-page = 0
-begin
-	page = page +1
-	temp_issues = client.list_issues(nil, :state => "closed", :page => page)
-	issues = issues + temp_issues;
-end while not temp_issues.empty?
-temp_issues = []
-page = 0
-begin
-	page = page +1
-	temp_issues = client.list_issues(nil, :state => "open", :page => page)
-	issues = issues + temp_issues;
-end while not temp_issues.empty?
+org_repo_names.each do |repo_name|
+  puts "\nGathering issues in repo " + repo_name + "..."
+  temp_issues = []
+  issues = []
+  page = 0
+  begin
+    page = page +1
+    temp_issues = client.list_issues(repo_name, :state => "closed", :page => page)
 
+    issues = issues + temp_issues;
+  end while not temp_issues.empty?
+  temp_issues = []
+  page = 0
+  begin
+    page = page +1
+    temp_issues = client.list_issues(repo_name, :state => "open", :page => page)
+    issues = issues + temp_issues;
+  end while not temp_issues.empty?
 
-puts "Processing #{issues.size} issues..."
+  puts "Found " + issues.count.to_s + " issues."
+
+  all_issues.push(issues)
+end
+
+puts "\n\n\n"
+puts "-----------------------------"
+puts "Found a total of " + all_issues.count.to_s + " issues across " + org_repos.count.to_s + " repositories."
+puts "-----------------------------"
+
+puts "Processing #{all_issues.size} issues..."
 issues.each do |issue|
   puts "Processing issue #{issue['number']}..."
   # Work out the type based on our existing labels
