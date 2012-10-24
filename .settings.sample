@@ -1,0 +1,4 @@
+export TIMEZONE_OFFSET="-5"
+export CSV_FILENAME=/issues.csv
+export GITHUB_ORGANIZATION=myorgname
+
