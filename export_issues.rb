@@ -1,22 +1,24 @@
 require 'octokit'
 require 'csv'
 require 'date'
-# Github credentials to access your private project
-USERNAME="USER_NAME"
-PASSWORD="SEKRIT"
+require 'rubygems'
+require 'highline/import'
 
-# Project you want to export issues from
-USER="REPO_OWNER"
-PROJECT="REPO_NAME"
+TIMEZONE_OFFSET=ENV['GITHUB_TIMEZONE_SETTINGS']
+CSV_FILENAME=ENV['GITHUB_DEFAULT_CSV_FILENAME']
+GITHUB_ORGANIZATION=ENV['GITHUB_ORGANIZATION_NAME']
+#/issues.csv
 
-# Your local timezone offset to convert times
-TIMEZONE_OFFSET="-4"
+username = ask("Enter Github username: ") { |q| q.echo = false }
+password = ask("Enter Github password: ")
 
-client = Octokit::Client.new(:login => USERNAME, :password => PASSWORD)
+client = Octokit::Client.new(:login => username, :password => password)
 
-csv = CSV.new(File.open(File.dirname(__FILE__) + "/issues3.csv", 'w'))
+return 0
 
-puts "Initialising CSV file..."
+csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
+
+puts "Initialising CSV file " + CSV_FILENAME + "..."
 #CSV Headers
 header = [
   "Summary",
