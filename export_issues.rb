@@ -4,13 +4,32 @@ require 'date'
 require 'rubygems'
 require 'highline/import'
 
-TIMEZONE_OFFSET=ENV['GITHUB_TIMEZONE_SETTINGS']
+TIMEZONE_OFFSET=ENV['GITHUB_TIMEZONE_OFFSET']
 CSV_FILENAME=ENV['GITHUB_DEFAULT_CSV_FILENAME']
 GITHUB_ORGANIZATION=ENV['GITHUB_ORGANIZATION_NAME']
 #/issues.csv
 
-username = ask("Enter Github username: ") { |q| q.echo = false }
-password = ask("Enter Github password: ")
+puts "Getting ready to pull down all issues in the " + GITHUB_ORGANIZATION + " organization."
+username = ask("Enter Github username: ")
+password = ask("Enter Github password: ") { |q| q.echo = false }
+
+client = Octokit::Client.new(:login => username, :password => password)
+
+csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
+
+puts "Initialising CSV file " + CSV_FILENAME + "..."
+#CSV Headers
+header = [
+  "Summary",
+  "Description",
+  "Date created",
+  "Date modified",
+  "Issue type",
+  "Milestone",
+  "Priority",
+  "Status",
+  "Reporter"
+]
 
 client = Octokit::Client.new(:login => username, :password => password)
 
