@@ -14,8 +14,6 @@ password = ask("Enter Github password: ")
 
 client = Octokit::Client.new(:login => username, :password => password)
 
-return 0
-
 csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
 
 puts "Initialising CSV file " + CSV_FILENAME + "..."
@@ -41,14 +39,14 @@ issues = []
 page = 0
 begin
 	page = page +1
-	temp_issues = client.list_issues("#{USER}/#{PROJECT}", :state => "closed", :page => page)
+	temp_issues = client.list_issues(nil, :state => "closed", :page => page)
 	issues = issues + temp_issues;
 end while not temp_issues.empty?
 temp_issues = []
 page = 0
 begin
 	page = page +1
-	temp_issues = client.list_issues("#{USER}/#{PROJECT}", :state => "open", :page => page)
+	temp_issues = client.list_issues(nil, :state => "open", :page => page)
 	issues = issues + temp_issues;
 end while not temp_issues.empty?
 
