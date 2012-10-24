@@ -20,24 +20,7 @@ csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
 puts "Initialising CSV file " + CSV_FILENAME + "..."
 #CSV Headers
 header = [
-  "Summary",
-  "Description",
-  "Date created",
-  "Date modified",
-  "Issue type",
-  "Milestone",
-  "Priority",
-  "Status",
-  "Reporter"
-]
-
-client = Octokit::Client.new(:login => username, :password => password)
-
-csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
-
-puts "Initialising CSV file " + CSV_FILENAME + "..."
-#CSV Headers
-header = [
+  "Repo",
   "Summary",
   "Description",
   "Date created",
@@ -51,6 +34,15 @@ header = [
 # We need to add a column for each comment, so this dictates how many comments for each issue you want to support
 #20.times { header << "Comments" }
 csv << header
+
+puts "Finding this organization's repositories..."
+org_repos = client.organization_repositories(GITHUB_ORGANIZATION)
+puts "Found " + org_repos.count.to_s + " repositories:"
+org_repos.each do |r|
+  puts r['full_name']
+end
+puts "\nGathering issues..."
+
 
 puts "Getting issues from Github..."
 temp_issues = []
