@@ -7,7 +7,6 @@ require 'highline/import'
 TIMEZONE_OFFSET=ENV['GITHUB_TIMEZONE_OFFSET']
 CSV_FILENAME=ENV['GITHUB_DEFAULT_CSV_FILENAME']
 GITHUB_ORGANIZATION=ENV['GITHUB_ORGANIZATION_NAME']
-#/issues.csv
 
 puts "Getting ready to pull down all issues in the " + GITHUB_ORGANIZATION + " organization."
 username = ask("Enter Github username: ")
@@ -54,15 +53,20 @@ org_repo_names.each do |repo_name|
   begin
     page = page +1
     temp_issues = client.list_issues(repo_name, :state => "closed", :page => page)
-
-    issues = issues + temp_issues;
+    issues = issues + temp_issues
+  rescue TypeError
+    puts 'Issues are disabled for this repo.'
+    break
   end while not temp_issues.empty?
   temp_issues = []
   page = 0
   begin
     page = page +1
     temp_issues = client.list_issues(repo_name, :state => "open", :page => page)
-    issues = issues + temp_issues;
+    issues = issues + temp_issues
+  rescue TypeError
+    puts 'Issues are disabled for this repo.'
+    break
   end while not temp_issues.empty?
 
   puts "Found " + issues.count.to_s + " issues."
@@ -72,7 +76,7 @@ end
 
 puts "\n\n\n"
 puts "-----------------------------"
-puts "Found a total of " + all_issues.count.to_s + " issues across " + org_repos.count.to_s + " repositories."
+puts "Found a total of #{all_issues.size} issues across #{org_repos.size} repositories."
 puts "-----------------------------"
 
 puts "Processing #{all_issues.size} issues..."
