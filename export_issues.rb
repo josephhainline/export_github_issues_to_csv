@@ -62,6 +62,10 @@ end
 
 all_issues = []
 
+#JWH3 hack
+30.times { org_repo_names.pop }
+
+
 org_repo_names.each do |repo_name|
   puts "\nGathering issues in repo " + repo_name + "..."
   temp_issues = []
@@ -71,9 +75,6 @@ org_repo_names.each do |repo_name|
     page = page +1
     temp_issues = client.list_issues(repo_name, :state => "closed", :page => page)
     issues = issues + temp_issues
-    #puts "!!!!!!!!!!!!!!!!!!!!! issues:"
-    #puts issues
-    #puts "....................."
   rescue TypeError
     break
   end while not temp_issues.empty?
@@ -90,7 +91,7 @@ org_repo_names.each do |repo_name|
 
   puts "Found " + issues.count.to_s + " issues."
 
-  all_issues.push(issues)
+  all_issues = all_issues + issues
 end
 
 puts "\n\n\n"
@@ -100,7 +101,9 @@ puts "-----------------------------"
 
 puts "Processing #{all_issues.size} issues..."
 all_issues.each do |issue|
+
   puts "Processing issue #{issue['number']}..."
+
   # Work out the type based on our existing labels
   case
     when issue['labels'].to_s =~ /Bug/i
@@ -126,8 +129,7 @@ all_issues.each do |issue|
     milestone = milestone['title']
   end
 
-  repo_name = issue['html_url'] =~ /\/(.*)\/issues\//
-  puts "repo_name: #{repo_name}"
+  issue['html_url'] =~ /\/github.com\/(.+)\/issues\//
   repo_name = $1
   puts "repo_name: #{repo_name}"
 
