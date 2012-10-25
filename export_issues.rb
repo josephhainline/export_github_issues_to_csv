@@ -104,7 +104,7 @@ puts "-----------------------------"
 puts "Processing #{all_issues.size} issues..."
 all_issues.each do |issue|
 
-  puts "Processing issue #{issue['number']}..."
+  puts "Processing issue #{issue['number']} at #{issue['html_url']}..."
 
   # Work out the type based on our existing labels
   case
