@@ -53,7 +53,7 @@ csv << header
 
 puts "Finding this organization's repositories..."
 org_repos = client.organization_repositories(GITHUB_ORGANIZATION)
-puts "Found " + org_repos.count.to_s + " repositories:"
+puts "\nFound " + org_repos.count.to_s + " repositories:"
 org_repo_names = []
 org_repos.each do |r|
   org_repo_names.push r['full_name']
@@ -114,14 +114,38 @@ all_issues.each do |issue|
       type = "Task"
   end
 
+  labelnames = []
+  issue['labels'].each do |label|
+    label.to_s =~ /name="(.+?)"/
+    labelname = $1
+    labelnames.push(labelname)
+  end
+
   # Work out the state based on our existing labels
-  case
-    when issue['labels'].to_s =~ /0 -/i
-      state = "Backlog"
-    when issue['labels'].to_s =~ /[12345678] -/i
-      state = "In Development"
-    when issue['labels'].to_s =~ /9 -/i
-      state = "Done"
+  state = ""
+  labelnames.each do |n|
+    case
+      when n =~ /0 - /
+        state = "0 - Backlog"
+      when n =~ /1 - /
+        state = "1 - Design Backlog"
+      when n =~ /2 - /
+        state = "2 - Design in Process"
+      when n =~ /3 - /
+        state = "3 - Ready for Coding"
+      when n =~ /4 - /
+        state = "4 - Coding in Process"
+      when n =~ /5 - /
+        state = "5 - Pull Request"
+      when n =~ /6 - /
+        state = "6 - Ready for QA"
+      when n =~ /7 - /
+        state = "7 - QA in Process"
+      when n =~ /8 - /
+        state = "8 - QA Approved"
+      when n =~ /9 - /
+        state = "9 - Ready for Demo"
+    end
   end
 
   milestone = issue['milestone'] || "None"
@@ -131,7 +155,6 @@ all_issues.each do |issue|
 
   issue['html_url'] =~ /\/github.com\/(.+)\/issues\//
   repo_name = $1
-  puts "repo_name: #{repo_name}"
 
   # Needs to match the header order above, date format are based on Jira default
   row = [
