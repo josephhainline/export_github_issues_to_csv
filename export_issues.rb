@@ -13,26 +13,32 @@ GITHUB_PASSWORD=ENV['GITHUB_PASSWORD']
 GITHUB_ORGANIZATION = ask("Enter Github organization name: ") if GITHUB_ORGANIZATION.nil?
 puts "Getting ready to pull down all issues in the " + GITHUB_ORGANIZATION + " organization."
 
-if (GITHUB_USERNAME.nil?)
-  GITHUB_USERNAME = ask("Enter Github username: ")
+if (GITHUB_USERNAME.nil? || GITHUB_USERNAME.size < 1)
+  username = ask("Enter Github username: ")
 else
   puts "Github username: #{GITHUB_USERNAME}"
+  username = GITHUB_USERNAME
 end
 
-if (GITHUB_PASSWORD.nil?)
+if (GITHUB_PASSWORD.nil? || GITHUB_PASSWORD.size < 1)
   password = ask("Enter Github password: ") { |q| q.echo = false }
 else
+  password = GITHUB_PASSWORD
   puts "Github password: ***********"
 end
 
-CSV_FILENAME=ENV['GITHUB_DEFAULT_CSV_FILENAME']
-CSV_FILENAME = ask("Enter output file path: ") if CSV_FILENAME.nil?
+if (CSV_FILENAME.nil? || CSV_FILENAME.size < 1)
+  csv_file = ask("Enter output file path: ")
+else
+  csv_file = CSV_FILENAME
+end
 
-client = Octokit::Client.new(:login => GITHUB_USERNAME, :password => GITHUB_PASSWORD)
 
-csv = CSV.new(File.open(File.dirname(__FILE__) + CSV_FILENAME, 'w'))
+client = Octokit::Client.new(:login => username, :password => password)
 
-puts "Initialising CSV file " + CSV_FILENAME + "..."
+csv = CSV.new(File.open(File.dirname(__FILE__) + csv_file, 'w'))
+
+puts "Initialising CSV file " + csv_file + "..."
 #CSV Headers
 header = [
   "Repo",
@@ -61,10 +67,6 @@ org_repos.each do |r|
 end
 
 all_issues = []
-
-#JWH3 hack
-30.times { org_repo_names.pop }
-
 
 org_repo_names.each do |repo_name|
   puts "\nGathering issues in repo " + repo_name + "..."
