@@ -1,4 +1,8 @@
-export TIMEZONE_OFFSET="-5"
-export CSV_FILENAME=/issues.csv
-export GITHUB_ORGANIZATION=myorgname
+export GITHUB_TIMEZONE_OFFSET="-5"
+
+# optional variables, if not specified will prompt in script
+export GITHUB_DEFAULT_CSV_FILENAME=/all_issues.csv
+export GITHUB_ORGANIZATION_NAME=JoesOrganization
+export GITHUB_USERNAME=JoeSmith
+export GITHUB_PASSWORD=apassword
 
